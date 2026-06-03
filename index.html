@@ -3,59 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koxh.-ai</title>
+    <title>Koxh AI</title>
     <style>
-        /* [Keep your previous CSS here, just add this tiny bit for the file icon] */
-        .file-btn { background: none; border: none; color: #a8c7fa; cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
+        body { background-color: #131314; color: #e3e3e3; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 20px; font-size: 1.5rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #chat-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .input-box { width: 80%; max-width: 700px; background: #1e1f20; padding: 15px; border-radius: 25px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        input[type="text"] { flex-grow: 1; background: transparent; border: none; color: white; outline: none; padding: 10px; }
+        button { background: #444746; color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; }
+        .file-input { display: none; }
+        .file-label { cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
-    <header><h1>Koxh.-ai</h1></header>
-    <div id="chat-container"></div>
-    <div class="input-outer">
-        <div id="input-container">
-            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)">
-            <button class="file-btn" onclick="document.getElementById('file-input').click()">📷</button>
-            <input type="text" id="msg-input" placeholder="Message Koxh">
-            <button id="send-btn" onclick="sendMessage()">➔</button>
+
+    <header>
+        <div>Koxh</div>
+        <button onclick="newChat()">New Chat +</button>
+    </header>
+
+    <div id="chat-area">
+        <h1 id="greeting">Hi there, let's get into it.</h1>
+        <div class="input-box">
+            <label for="fileUpload" class="file-label">📎</label>
+            <input type="file" id="fileUpload" class="file-input" multiple>
+            <input type="text" id="userInput" placeholder="Ask Koxh anything...">
+            <button onclick="sendMessage()">➤</button>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://koxh-ai.onrender.com/chat";
-        let selectedImage = null;
-
-        function handleFile(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                selectedImage = e.target.result;
-                alert("Photo attached! Now type your question and hit send.");
-            };
-            reader.readAsDataURL(file);
+        // Handle New Chat
+        function newChat() {
+            document.getElementById('chat-area').innerHTML = "<h1>New Chat started.</h1>";
         }
 
-        async function sendMessage() {
-            const input = document.getElementById("msg-input");
-            const text = input.value;
-            if (!text && !selectedImage) return;
+        // Handle File Selection
+        document.getElementById('fileUpload').addEventListener('change', function() {
+            alert("File selected: " + this.files[0].name);
+        });
 
-            appendMessage(text || "[Image Sent]", 'user', 'You');
-            input.value = "";
-            
-            const payload = { message: text, image: selectedImage };
-            selectedImage = null; // Clear image
-
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            appendMessage(data.koxh_response, 'ai', 'Koxh');
+        // Handle Sending Message
+        function sendMessage() {
+            const input = document.getElementById('userInput').value;
+            if(input) {
+                alert("You said: " + input);
+                document.getElementById('userInput').value = '';
+            }
         }
-        
-        // [Include your previous appendMessage/Loading logic here!]
     </script>
 </body>
 </html>
