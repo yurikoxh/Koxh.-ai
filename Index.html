@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koxh.-ai</title>
+    <style>
+        /* [Keep your previous CSS here, just add this tiny bit for the file icon] */
+        .file-btn { background: none; border: none; color: #a8c7fa; cursor: pointer; font-size: 1.2rem; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <header><h1>Koxh.-ai</h1></header>
+    <div id="chat-container"></div>
+    <div class="input-outer">
+        <div id="input-container">
+            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)">
+            <button class="file-btn" onclick="document.getElementById('file-input').click()">📷</button>
+            <input type="text" id="msg-input" placeholder="Message Koxh">
+            <button id="send-btn" onclick="sendMessage()">➔</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://koxh-ai.onrender.com/chat";
+        let selectedImage = null;
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedImage = e.target.result;
+                alert("Photo attached! Now type your question and hit send.");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("msg-input");
+            const text = input.value;
+            if (!text && !selectedImage) return;
+
+            appendMessage(text || "[Image Sent]", 'user', 'You');
+            input.value = "";
+            
+            const payload = { message: text, image: selectedImage };
+            selectedImage = null; // Clear image
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            appendMessage(data.koxh_response, 'ai', 'Koxh');
+        }
+        
+        // [Include your previous appendMessage/Loading logic here!]
+    </script>
+</body>
+</html>
